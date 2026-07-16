@@ -1,0 +1,23 @@
+version: '3.9'
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: memo
+      POSTGRES_PASSWORD: memo123
+      POSTGRES_DB: memo_hub
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  web:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://memo:memo123@postgres:5432/memo_hub
+    ports:
+      - '3000:3000'
+volumes:
+  postgres_data:
