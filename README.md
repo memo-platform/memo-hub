@@ -6,8 +6,9 @@ MEMO HUB is a modern enterprise resource planning platform built as a Next.js mo
 
 - `apps/web` - Next.js 15 frontend application
 - `apps/api` - Next.js 15 API application with Prisma and PostgreSQL
+- `packages/database` - Shared Prisma database package for PostgreSQL
 - `packages/ui` - Shared React UI components
-- `packages/config` - Shared shared configuration and constants
+- `packages/config` - Shared configuration and constants
 
 ## Getting Started
 
@@ -19,6 +20,7 @@ MEMO HUB is a modern enterprise resource planning platform built as a Next.js mo
 2. Create environment files:
    - `apps/web/.env.local`
    - `apps/api/.env`
+   - `.env.example`
 
 3. Add required variables:
    ```env
@@ -27,9 +29,9 @@ MEMO HUB is a modern enterprise resource planning platform built as a Next.js mo
    NEXTAUTH_SECRET=replace-with-a-secure-value
    ```
 
-4. Generate Prisma client:
+4. Generate Prisma client for the database package:
    ```bash
-   npm run prisma:generate --workspace @memo-hub/api
+   npm run prisma:generate --workspace @memo-hub/database
    ```
 
 5. Run the development server:
