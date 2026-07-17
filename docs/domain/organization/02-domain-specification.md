@@ -60,7 +60,7 @@ Only approved transitions are allowed and every transition emits the correspondi
   - Activated
   - Suspended
   - Deactivated
-  - Archived / Retired
+  - Archived
 - Notes
   - The Organization entity is the primary business object in this domain.
   - It should remain free of module-specific behavior and focus on organization-level concerns.
@@ -341,7 +341,7 @@ Only approved transitions are allowed and every transition emits the correspondi
 
 ### OrganizationDeactivated
 - Trigger
-  - When an Organization is deactivated or retired.
+  - When an Organization is deactivated.
 - Preconditions
   - Organization is in a valid state for deactivation.
 - Payload
@@ -351,6 +351,19 @@ Only approved transitions are allowed and every transition emits the correspondi
 - Consumers
   - Dependency cleanup
   - Audit recording
+
+### OrganizationArchived
+- Trigger
+  - When an Organization is archived for historical retention.
+- Preconditions
+  - Organization is in an archival-ready state.
+- Payload
+  - Organization identifier
+  - Archive timestamp
+  - Current status
+- Consumers
+  - Audit recording
+  - Historical retention services
 
 ### OrganizationSettingsUpdated
 - Trigger

@@ -43,13 +43,22 @@ The Organization domain enables enterprise customers to model business entities 
 - Organization-level defaults must be consistently applied across subordinate branches unless explicitly overridden.
 - Organization governance settings must not cross tenant boundaries.
 
-## 8. Domain Events
+## 8. Lifecycle States
+- Draft
+- Created
+- Active
+- Suspended
+- Deactivated
+- Archived
+
+## 9. Domain Events
 
 ### Lifecycle Events
 - `OrganizationCreated`
 - `OrganizationActivated`
 - `OrganizationSuspended`
 - `OrganizationDeactivated`
+- `OrganizationArchived`
 
 ### Configuration Events
 - `OrganizationSettingsUpdated`

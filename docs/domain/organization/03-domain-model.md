@@ -373,22 +373,23 @@ States:
 - Created
 - Active
 - Suspended
+- Deactivated
 - Archived
-- Retired
 
 Allowed transitions:
 - Draft -> Created
 - Created -> Active
 - Active -> Suspended
 - Suspended -> Active
+- Active -> Deactivated
+- Suspended -> Deactivated
 - Active -> Archived
 - Suspended -> Archived
-- Archived -> Retired
+- Deactivated -> Archived
 
 Invalid transitions:
 - Draft -> Active
 - Archived -> Active
-- Retired -> any state
 - Active -> Draft
 
 State rules:
@@ -396,8 +397,8 @@ State rules:
 - Created means the organization exists and is configured but not yet operational.
 - Active means the organization is fully enabled for business modules.
 - Suspended means the organization is temporarily prevented from operational activity.
+- Deactivated means the organization is non-operational but retained for administrative review or archival preparation.
 - Archived means the organization is retired from active use but preserved for historical purposes.
-- Retired means the organization is no longer available for business activity and is effectively end-of-life.
 
 ---
 
@@ -520,10 +521,11 @@ stateDiagram-v2
     Created --> Active : enable
     Active --> Suspended : suspend
     Suspended --> Active : reactivate
+    Active --> Deactivated : deactivate
+    Suspended --> Deactivated : deactivate
     Active --> Archived : archive
     Suspended --> Archived : archive
-    Archived --> Retired : retire
-    Retired --> [*]
+    Deactivated --> Archived : archive
 ```
 
 ---
@@ -593,7 +595,7 @@ stateDiagram-v2
 - Primary Actor
   - Organization administrator.
 - Preconditions
-  - Organization is not already Retired.
+  - Organization is not already Archived.
 - Postconditions
   - Organization is Deactivated or Archived depending on business rules.
 - Produced Domain Events
@@ -642,11 +644,24 @@ stateDiagram-v2
 - Primary Actor
   - Financial administrator.
 - Preconditions
-  - Organization is not Archived or Retired.
+  - Organization is not Archived.
 - Postconditions
   - Fiscal configuration is updated.
 - Produced Domain Events
   - OrganizationDefaultsChanged
+
+### Update Subscription Scope
+- Purpose
+  - Adjust the organization’s subscription eligibility and module access scope.
+- Primary Actor
+  - Subscription administrator.
+- Preconditions
+  - Subscription context exists.
+  - Organization eligibility has been evaluated.
+- Postconditions
+  - Subscription scope changes are registered.
+- Produced Domain Events
+  - OrganizationSubscriptionScopeChanged
 
 ### Associate Legal Entity
 - Purpose
@@ -725,6 +740,15 @@ flowchart TD
     A[Update Organization Configuration] --> B[OrganizationSettingsUpdated]
     B --> C[Propagate Settings]
     C --> D[Reevaluate Governance Policies]
+    D --> E[Audit Recording]
+```
+
+### Subscription Scope Change
+```mermaid
+flowchart TD
+    A[Update Subscription Scope] --> B[OrganizationSubscriptionScopeChanged]
+    B --> C[Evaluate Entitlement]
+    C --> D[Propagate Access Rules]
     D --> E[Audit Recording]
 ```
 
@@ -853,6 +877,17 @@ Branch, User, Tenant, and Legal Entity remain outside the Organization aggregate
 - Produced Domain Events
   - OrganizationGovernanceProfileAssigned
 
+### UpdateSubscriptionScope
+- Purpose
+  - Change subscription eligibility or plan scope for an Organization.
+- Preconditions
+  - Subscription context exists.
+  - Organization eligibility has been evaluated.
+- Business Rules
+  - Subscription scope changes MUST respect organization status and tenant constraints.
+- Produced Domain Events
+  - OrganizationSubscriptionScopeChanged
+
 ---
 
 ## Domain Policies
@@ -875,7 +910,6 @@ Branch, User, Tenant, and Legal Entity remain outside the Organization aggregate
 - Rules
   - Only defined lifecycle transitions are permitted.
   - Organization cannot move to a previous incompatible state.
-  - Retired state is terminal.
 - Dependencies
   - OrganizationStatus
   - OrganizationConfiguration
